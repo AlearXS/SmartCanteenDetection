@@ -1,10 +1,12 @@
 # yolov5 deepsort 行人 车辆 跟踪 检测 计数
 
-智慧食堂 App 识别部分。
+智慧食堂 App 识别部分。[后端部分](https://github.com/APeng215/SmartCanteenBackend)，[前端部分](https://github.com/AlearXS/SmartCanteenApp)。
 
 出于同学们的隐私考虑没有上传视频。
 
 新版 opencv-python 导入方式改为 `import cv2`
+
+numpy 需要使用就版本，开发环境中使用 1.22.4。
 
 ## 功能
 - 实现了 出/入 分别计数。
