@@ -4,7 +4,7 @@ import tracker
 from detector import Detector
 import cv2
 
-def process_video_camera3(video_path):
+def process_video_camera3(video_path, canteen_name):
 
     # 打开视频
     capture = cv2.VideoCapture(video_path)
