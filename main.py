@@ -2,17 +2,20 @@ import threading
 import numpy as np
 import tracker
 from detector import Detector
+import backendConnector as bc
 import cv2
 
 def process_video_camera3(video_path, canteen_name):
-
     # 打开视频
     capture = cv2.VideoCapture(video_path)
     # capture = cv2.VideoCapture('TownCentreXVID.avi')
-    # 进入数量
-    down_count = 0
     # 离开数量
+    down_count = 0
+    # 进入数量
     up_count = 0
+    # 食堂现有人数
+    
+    peopleNum = bc.get(canteen_name)['peopleNum']
     # 根据视频尺寸，填充一个polygon，供撞线计算使用
     mask_image_temp = np.zeros((674, 1200), dtype=np.uint8)
 
@@ -114,8 +117,10 @@ def process_video_camera3(video_path, canteen_name):
                     # 判断 黄polygon list 里是否有此 track_id
                     # 有此 track_id，则 认为是 外出方向
                     if track_id in list_overlapping_yellow_polygon:
-                        # 外出+1
+                        # 进入+1
                         up_count += 1
+                        peopleNum += 1
+                        bc.update(canteen_name, peopleNum)
 
                         print(
                             f'类别: {label} | id: {track_id} | 上行撞线 | 上行撞线总数: {up_count} | 上行id列表: {list_overlapping_yellow_polygon}')
@@ -135,10 +140,12 @@ def process_video_camera3(video_path, canteen_name):
                     pass
 
                     # 判断 蓝polygon list 里是否有此 track_id
-                    # 有此 track_id，则 认为是 进入方向
+                    # 有此 track_id，则 认为是 离开方向
                     if track_id in list_overlapping_blue_polygon:
-                        # 进入+1
+                        # 离开+1
                         down_count += 1
+                        peopleNum -= 1
+                        bc.update(canteen_name, peopleNum)
 
                         print(
                             f'类别: {label} | id: {track_id} | 下行撞线 | 下行撞线总数: {down_count} | 下行id列表: {list_overlapping_blue_polygon}')
@@ -214,9 +221,9 @@ def process_video_camera2(video_path):
     # 打开视频
     capture = cv2.VideoCapture(video_path)
     # capture = cv2.VideoCapture('TownCentreXVID.avi')
-    # 进入数量
-    down_count = 0
     # 离开数量
+    down_count = 0
+    # 进入数量
     up_count = 0
     # 根据视频尺寸，填充一个polygon，供撞线计算使用
     mask_image_temp = np.zeros((674, 1200), dtype=np.uint8)
@@ -340,9 +347,9 @@ def process_video_camera2(video_path):
                     pass
 
                     # 判断 蓝polygon list 里是否有此 track_id
-                    # 有此 track_id，则 认为是 进入方向
+                    # 有此 track_id，则 认为是 离开方向
                     if track_id in list_overlapping_blue_polygon:
-                        # 进入+1
+                        # 离开+1
                         down_count += 1
 
                         print(
@@ -422,7 +429,7 @@ def process_video(video_path, process_func):
 if __name__ == '__main__':
 
 
-    down_count, up_count = process_video_camera3(r'video\test3.mp4')
+    down_count, up_count = process_video_camera3(r'video\test3.mp4', '荷园一餐厅')
     print(f'Down: {down_count}, Up: {up_count}')
     '''
     # 视频文件列表
